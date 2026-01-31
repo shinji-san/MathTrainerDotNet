@@ -1,0 +1,183 @@
+@using MathTrainerDotNet.Models
+@using MathTrainerDotNet.Services.Localization
+@inject ILocalizationService LocalizationService
+
+<div class="setup-panel">
+    <h2>@LocalizationService["CreateNewSeries"]</h2>
+    
+    <!-- Schülerauswahl -->
+    <div class="form-group">
+        <label>@LocalizationService["Student"]:</label>
+        <div class="student-selection">
+            <select value="@SelectedStudentId" @onchange="OnStudentSelectionChanged" class="student-select">
+                <option value="0">@LocalizationService["CreateNewStudent"]</option>
+                @foreach (var student in Students)
+                {
+                    <option value="@student.Id">@student.Name</option>
+                }
+            </select>
+            @if (SelectedStudentId == 0)
+            {
+                <input type="text" value="@NewStudentName" @oninput="OnNewStudentNameInput"
+                       placeholder="@LocalizationService["StudentNamePlaceholder"]" 
+                       class="student-name-input" />
+            }
+        </div>
+    </div>
+    
+    <!-- Rechenart -->
+    <div class="form-group">
+        <label>@LocalizationService["OperationType"]:</label>
+        <div class="operation-selection">
+            @foreach (var op in Enum.GetValues<OperationType>())
+            {
+                <label class="radio-option @(SelectedOperation == op ? "selected" : "")">
+                    <input type="radio" name="operation" 
+                           checked="@(SelectedOperation == op)"
+                           @onchange="() => OnOperationChanged(op)" />
+                    <span class="radio-icon">@GetOperationSymbol(op)</span>
+                    <span>@GetLocalizedOperationName(op)</span>
+                </label>
+            }
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>@LocalizationService["NumberRange"]:</label>
+        <div class="range-inputs">
+            <input type="number" value="@MinValue" @onchange="OnMinValueChanged" min="0" max="9999" placeholder="@LocalizationService["From"]" />
+            <span>@LocalizationService["To"]</span>
+            <input type="number" value="@MaxValue" @onchange="OnMaxValueChanged" min="1" max="10000" />
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>@LocalizationService["ExerciseCount"]:</label>
+        <input type="number" value="@ExerciseCount" @onchange="OnExerciseCountChanged" min="5" max="100" />
+    </div>
+    
+    <div class="form-group">
+        <label>@LocalizationService["OperandCount"]:</label>
+        <input type="number" value="@OperandCount" @onchange="OnOperandCountChanged" min="2" max="5" />
+    </div>
+    
+    <button class="btn-primary" @onclick="OnGenerateRequested" disabled="@IsLoading">
+        @if (IsLoading)
+        {
+            <span>@LocalizationService["Generating"]</span>
+        }
+        else
+        {
+            <span>🎲 @LocalizationService["GenerateExercises"]</span>
+        }
+    </button>
+    
+    <hr />
+    
+    <h2>@LocalizationService["OrLoadSeries"]</h2>
+    <div class="form-group">
+        <label>@LocalizationService["EnterExerciseId"]:</label>
+        <div class="id-input-group">
+            <input type="text" value="@LoadId" @oninput="OnLoadIdInput" maxlength="6" placeholder="z.B. ABC123" 
+                   style="text-transform: uppercase;" />
+            <button class="btn-primary" @onclick="OnLoadRequested" disabled="@IsLoading">
+                📥 @LocalizationService["Load"]
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public List<Student> Students { get; set; } = new();
+    [Parameter] public int SelectedStudentId { get; set; }
+    [Parameter] public EventCallback<int> SelectedStudentIdChanged { get; set; }
+    [Parameter] public string NewStudentName { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> NewStudentNameChanged { get; set; }
+    [Parameter] public OperationType SelectedOperation { get; set; }
+    [Parameter] public EventCallback<OperationType> SelectedOperationChanged { get; set; }
+    [Parameter] public int MinValue { get; set; }
+    [Parameter] public EventCallback<int> MinValueChanged { get; set; }
+    [Parameter] public int MaxValue { get; set; }
+    [Parameter] public EventCallback<int> MaxValueChanged { get; set; }
+    [Parameter] public int ExerciseCount { get; set; }
+    [Parameter] public EventCallback<int> ExerciseCountChanged { get; set; }
+    [Parameter] public int OperandCount { get; set; }
+    [Parameter] public EventCallback<int> OperandCountChanged { get; set; }
+    [Parameter] public string LoadId { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> LoadIdChanged { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+    
+    [Parameter] public EventCallback OnGenerateRequested { get; set; }
+    [Parameter] public EventCallback OnLoadRequested { get; set; }
+
+    private async Task OnStudentSelectionChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var id))
+        {
+            await SelectedStudentIdChanged.InvokeAsync(id);
+        }
+    }
+
+    private async Task OnNewStudentNameInput(ChangeEventArgs e)
+    {
+        await NewStudentNameChanged.InvokeAsync(e.Value?.ToString() ?? string.Empty);
+    }
+
+    private async Task OnOperationChanged(OperationType op)
+    {
+        await SelectedOperationChanged.InvokeAsync(op);
+    }
+
+    private async Task OnMinValueChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var val))
+            await MinValueChanged.InvokeAsync(val);
+    }
+
+    private async Task OnMaxValueChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var val))
+            await MaxValueChanged.InvokeAsync(val);
+    }
+
+    private async Task OnExerciseCountChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var val))
+            await ExerciseCountChanged.InvokeAsync(val);
+    }
+
+    private async Task OnOperandCountChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var val))
+            await OperandCountChanged.InvokeAsync(val);
+    }
+
+    private async Task OnLoadIdInput(ChangeEventArgs e)
+    {
+        await LoadIdChanged.InvokeAsync(e.Value?.ToString() ?? string.Empty);
+    }
+
+    private string GetOperationSymbol(OperationType op) => op switch
+    {
+        OperationType.Multiplication => "×",
+        OperationType.Division => "÷",
+        OperationType.Addition => "+",
+        OperationType.Subtraction => "−",
+        OperationType.MultiplicationDivision => "×÷",
+        OperationType.AdditionSubtraction => "+−",
+        OperationType.All => "+-×÷",
+        _ => "?"
+    };
+
+    private string GetLocalizedOperationName(OperationType op) => op switch
+    {
+        OperationType.Multiplication => LocalizationService["Multiplication"],
+        OperationType.Division => LocalizationService["Division"],
+        OperationType.Addition => LocalizationService["Addition"],
+        OperationType.Subtraction => LocalizationService["Subtraction"],
+        OperationType.MultiplicationDivision => LocalizationService["MultiplicationDivision"],
+        OperationType.AdditionSubtraction => LocalizationService["AdditionSubtraction"],
+        OperationType.All => LocalizationService["AllOperations"],
+        _ => op.ToString()
+    };
+}

@@ -1,0 +1,106 @@
+@using MathTrainerDotNet.Services.Backup
+@using MathTrainerDotNet.Services.Localization
+@inject ILocalizationService LocalizationService
+
+<div class="modal-overlay" @onclick="OnClose">
+    <div class="modal-content" @onclick:stopPropagation="true">
+        <div class="modal-header">
+            <h2>⚙️ @LocalizationService["Settings"]</h2>
+            <button class="modal-close" @onclick="OnClose">✕</button>
+        </div>
+        
+        <div class="modal-body">
+            <h3>💾 @LocalizationService["DatabaseManagement"]</h3>
+            
+            @if (DbStats != null)
+            {
+                <div class="db-stats">
+                    <h4>@LocalizationService["DatabaseStats"]</h4>
+                    <table class="stats-table">
+                        <tr><td>@LocalizationService["Students"]:</td><td><strong>@DbStats.StudentCount</strong></td></tr>
+                        <tr><td>@LocalizationService["ExerciseSets"]:</td><td><strong>@DbStats.ExerciseSetCount</strong></td></tr>
+                        <tr><td>@LocalizationService["Exercises"]:</td><td><strong>@DbStats.ExerciseCount</strong></td></tr>
+                        <tr><td>@LocalizationService["FileSize"]:</td><td><strong>@DbStats.FileSizeFormatted</strong></td></tr>
+                    </table>
+                </div>
+            }
+            
+            <div class="backup-section">
+                <button class="btn-primary" @onclick="OnBackup" disabled="@IsBackupInProgress">
+                    @if (IsBackupInProgress)
+                    {
+                        <span>@LocalizationService["CreatingBackup"]</span>
+                    }
+                    else
+                    {
+                        <span>📥 @LocalizationService["Backup"]</span>
+                    }
+                </button>
+            </div>
+            
+            <hr />
+            
+            <div class="restore-section">
+                <p class="warning-text">⚠️ @LocalizationService["RestoreWarning"]</p>
+                
+                <InputFile OnChange="OnBackupFileSelected" accept=".db" class="file-input" />
+                
+                @if (SelectedBackupFile != null)
+                {
+                    <p class="selected-file">📁 @SelectedBackupFile.Name (@FormatFileSize(SelectedBackupFile.Size))</p>
+                    <button class="btn-primary btn-danger" @onclick="OnRestore" disabled="@IsRestoreInProgress">
+                        @if (IsRestoreInProgress)
+                        {
+                            <span>@LocalizationService["RestoringBackup"]</span>
+                        }
+                        else
+                        {
+                            <span>📤 @LocalizationService["Restore"]</span>
+                        }
+                    </button>
+                }
+            </div>
+            
+            @if (!string.IsNullOrEmpty(Message))
+            {
+                <div class="@(MessageIsError ? "error-message" : "success-message")">
+                    @Message
+                </div>
+            }
+        </div>
+        
+        <div class="modal-footer">
+            <button class="btn-primary" @onclick="OnClose">
+                @LocalizationService["Close"]
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public DatabaseStats? DbStats { get; set; }
+    [Parameter] public bool IsBackupInProgress { get; set; }
+    [Parameter] public bool IsRestoreInProgress { get; set; }
+    [Parameter] public IBrowserFile? SelectedBackupFile { get; set; }
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public bool MessageIsError { get; set; }
+    
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnBackup { get; set; }
+    [Parameter] public EventCallback<InputFileChangeEventArgs> OnFileSelected { get; set; }
+    [Parameter] public EventCallback OnRestore { get; set; }
+
+    private async Task OnBackupFileSelected(InputFileChangeEventArgs e)
+    {
+        await OnFileSelected.InvokeAsync(e);
+    }
+
+    private static string FormatFileSize(long bytes)
+    {
+        if (bytes < 1024)
+            return $"{bytes} B";
+        if (bytes < 1024 * 1024)
+            return $"{bytes / 1024.0:F1} KB";
+        return $"{bytes / (1024.0 * 1024.0):F1} MB";
+    }
+}

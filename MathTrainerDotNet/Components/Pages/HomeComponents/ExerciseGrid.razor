@@ -1,0 +1,50 @@
+@using MathTrainerDotNet.Services.Localization
+@using MathTrainerDotNet.ViewModels
+@inject ILocalizationService LocalizationService
+
+<div class="exercise-grid">
+    @for (int i = 0; i < Exercises.Count; i++)
+    {
+        var index = i;
+        var exercise = Exercises[index];
+        <div class="exercise-card @GetCardClass(exercise)">
+            <span class="exercise-number">@(index + 1).</span>
+            <span class="exercise-text">@exercise.DisplayText</span>
+            <input type="text" 
+                   class="exercise-input" 
+                   value="@exercise.UserAnswer"
+                   @oninput="(e) => OnAnswerInput.InvokeAsync((index, e.Value?.ToString() ?? string.Empty))"
+                   @onblur="() => OnCheckAnswer.InvokeAsync(index)"
+                   placeholder="?" />
+            @if (ShowAllResults || exercise.ShowResult)
+            {
+                <span class="exercise-result">@exercise.CorrectResult</span>
+            }
+            @if (exercise.IsCorrect.HasValue && !ShowAllResults)
+            {
+                <span class="feedback @(exercise.IsCorrect.Value ? "correct" : "incorrect")">
+                    @(exercise.IsCorrect.Value ? "✓" : "✗")
+                </span>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public List<IExerciseViewModel> Exercises { get; set; } = new();
+    [Parameter] public bool ShowAllResults { get; set; }
+    [Parameter] public EventCallback<(int Index, string Value)> OnAnswerInput { get; set; }
+    [Parameter] public EventCallback<int> OnCheckAnswer { get; set; }
+
+    private string GetCardClass(IExerciseViewModel exercise)
+    {
+        return ShowAllResults
+            ? "revealed"
+            : exercise.IsCorrect switch
+            {
+                true => "correct",
+                false => "incorrect",
+                _ => ""
+            };
+    }
+}

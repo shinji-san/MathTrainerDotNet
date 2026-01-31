@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  
+  <!-- App -->
+  <data name="AppTitle" xml:space="preserve"><value>Rechentrainer</value></data>
+  
+  <!-- Setup Panel -->
+  <data name="CreateNewSeries" xml:space="preserve"><value>Neue Aufgabenserie erstellen</value></data>
+  <data name="Student" xml:space="preserve"><value>Schüler</value></data>
+  <data name="CreateNewStudent" xml:space="preserve"><value>-- Neuen Schüler anlegen --</value></data>
+  <data name="StudentNamePlaceholder" xml:space="preserve"><value>Name des Schülers</value></data>
+  <data name="OperationType" xml:space="preserve"><value>Rechenart</value></data>
+  <data name="NumberRange" xml:space="preserve"><value>Zahlenraum</value></data>
+  <data name="From" xml:space="preserve"><value>Von</value></data>
+  <data name="To" xml:space="preserve"><value>bis</value></data>
+  <data name="ExerciseCount" xml:space="preserve"><value>Anzahl Aufgaben</value></data>
+  <data name="OperandCount" xml:space="preserve"><value>Anzahl Operanden</value></data>
+  <data name="GenerateExercises" xml:space="preserve"><value>Aufgaben generieren</value></data>
+  <data name="Generating" xml:space="preserve"><value>Wird generiert...</value></data>
+  
+  <!-- Operation Types -->
+  <data name="Multiplication" xml:space="preserve"><value>Multiplikation</value></data>
+  <data name="Division" xml:space="preserve"><value>Division</value></data>
+  <data name="Addition" xml:space="preserve"><value>Addition</value></data>
+  <data name="Subtraction" xml:space="preserve"><value>Subtraktion</value></data>
+  <data name="MultiplicationDivision" xml:space="preserve"><value>Multiplikation &amp; Division</value></data>
+  <data name="AdditionSubtraction" xml:space="preserve"><value>Addition &amp; Subtraktion</value></data>
+  <data name="AllOperations" xml:space="preserve"><value>Alle Rechenarten</value></data>
+  
+  <!-- Load Section -->
+  <data name="OrLoadSeries" xml:space="preserve"><value>Oder: Aufgabenserie laden</value></data>
+  <data name="EnterExerciseId" xml:space="preserve"><value>Aufgaben-ID eingeben</value></data>
+  <data name="Load" xml:space="preserve"><value>Laden</value></data>
+  
+  <!-- Exercise Panel -->
+  <data name="ShowAllResults" xml:space="preserve"><value>Zeige Lösungen</value></data>
+  <data name="HideResults" xml:space="preserve"><value>Verberge Lösungen</value></data>
+  <data name="DownloadPdf" xml:space="preserve"><value>Als PDF herunterladen</value></data>
+  <data name="DownloadSolutions" xml:space="preserve"><value>Lösungen herunterladen</value></data>
+  <data name="NewExercises" xml:space="preserve"><value>Neue Aufgaben</value></data>
+  <data name="Range" xml:space="preserve"><value>Zahlenraum</value></data>
+  
+  <!-- Error Messages -->
+  <data name="ErrorSelectStudent" xml:space="preserve"><value>Bitte wähle einen Schüler aus oder gib einen neuen Namen ein.</value></data>
+  <data name="ErrorMinMax" xml:space="preserve"><value>Der Mindestwert muss kleiner als der Höchstwert sein.</value></data>
+  <data name="ErrorMinValueDivision" xml:space="preserve"><value>Für Division muss der Mindestwert mindestens 1 sein.</value></data>
+  <data name="ErrorExerciseCount" xml:space="preserve"><value>Die Anzahl muss zwischen 5 und 100 liegen.</value></data>
+  <data name="ErrorInvalidId" xml:space="preserve"><value>Bitte gib eine gültige 6-stellige ID ein.</value></data>
+  <data name="ErrorNotFound" xml:space="preserve"><value>Keine Aufgabenserie mit der ID '{0}' gefunden.</value></data>
+  
+  <!-- PDF -->
+  <data name="PdfSolutions" xml:space="preserve"><value>LÖSUNGEN</value></data>
+  <data name="PdfName" xml:space="preserve"><value>Name</value></data>
+  <data name="PdfPoints" xml:space="preserve"><value>Punkte</value></data>
+  <data name="PdfCount" xml:space="preserve"><value>Anzahl</value></data>
+  <data name="PdfExercises" xml:space="preserve"><value>Aufgaben</value></data>
+  <data name="PdfEnterIdHint" xml:space="preserve"><value>Gib die ID {0} ein, um deine Antworten zu prüfen!</value></data>
+  <data name="PdfSolutionSheet" xml:space="preserve"><value>LÖSUNGSBLATT - Nur für Lehrer/Eltern</value></data>
+  
+  <!-- Database Backup/Restore -->
+  <data name="Settings" xml:space="preserve"><value>Einstellungen</value></data>
+  <data name="DatabaseManagement" xml:space="preserve"><value>Datenbank-Verwaltung</value></data>
+  <data name="Backup" xml:space="preserve"><value>Backup erstellen</value></data>
+  <data name="Restore" xml:space="preserve"><value>Wiederherstellen</value></data>
+  <data name="SelectBackupFile" xml:space="preserve"><value>Backup-Datei auswählen</value></data>
+  <data name="DatabaseStats" xml:space="preserve"><value>Datenbank-Statistik</value></data>
+  <data name="Students" xml:space="preserve"><value>Schüler</value></data>
+  <data name="ExerciseSets" xml:space="preserve"><value>Aufgabenserien</value></data>
+  <data name="Exercises" xml:space="preserve"><value>Aufgaben</value></data>
+  <data name="FileSize" xml:space="preserve"><value>Dateigröße</value></data>
+  <data name="BackupSuccess" xml:space="preserve"><value>Backup wurde erstellt.</value></data>
+  <data name="RestoreSuccess" xml:space="preserve"><value>Datenbank wurde wiederhergestellt: {0} Schüler, {1} Aufgabenserien.</value></data>
+  <data name="RestoreError" xml:space="preserve"><value>Fehler beim Wiederherstellen: {0}</value></data>
+  <data name="RestoreWarning" xml:space="preserve"><value>Achtung: Die aktuelle Datenbank wird überschrieben!</value></data>
+  <data name="Close" xml:space="preserve"><value>Schließen</value></data>
+  <data name="CreatingBackup" xml:space="preserve"><value>Backup wird erstellt...</value></data>
+  <data name="RestoringBackup" xml:space="preserve"><value>Wird wiederhergestellt...</value></data>
+  <data name="DatabaseFileNotFound" xml:space="preserve"><value>Datenbank nicht gefunden.</value></data>
+  <data name="InvalidSQLiteFile" xml:space="preserve"><value>Ungültige SQLite-Datei.</value></data>
+  <data name="NoDataReceived" xml:space="preserve"><value>Keine Daten empfangen.</value></data>
+  <data name="DivideByZero" xml:space="preserve"><value>Division durch Null.</value></data>
+  <data name="RestoreErrorGeneral" xml:space="preserve"><value>Fehler bei der Wiederherstellung: {0}</value></data>
+  <data name="DatabaseValidationFailed" xml:space="preserve"><value>Datenbank-Validierung fehlgeschlagen: {0}</value></data>
+  <data name="TableNotFound" xml:space="preserve"><value>Tabelle '{0}' nicht gefunden. Dies ist keine gültige MathTrainer-Datenbank.</value></data>
+  <data name="ToggleTheme" xml:space="preserve"><value>Theme umschalten</value></data>
+  <data name="PdfFileNameSolution" xml:space="preserve">
+    <value>Loesung</value>
+  </data>
+  <data name="FileNameAddition" xml:space="preserve">
+    <value>Addition</value>
+  </data>
+  <data name="FileNameAllOperation" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="FileNameMultiplication" xml:space="preserve">
+    <value>Multiplikation</value>
+  </data>
+  <data name="FileNameDivision" xml:space="preserve">
+    <value>Division</value>
+  </data>
+  <data name="FileNameSubtraction" xml:space="preserve">
+    <value>Subtraktion</value>
+  </data>
+  <data name="FileNameAdditionSubtraction" xml:space="preserve">
+    <value>Strichrechenarten</value>
+  </data>
+  <data name="FileNameMultiplicationDivision" xml:space="preserve">
+    <value>Punktrechenarten</value>
+  </data>
+</root>

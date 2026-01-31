@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="MathTrainerDotNet/MathTrainerDotNet.csproj" />
+  <Project Path="MathTrainerDotNetTest/MathTrainerDotNetTest.csproj" />
+</Solution>

@@ -1,0 +1,36 @@
+# Build-Artefakte
+**/bin/
+**/obj/
+**/out/
+**/publish/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Test-Projekt (nicht für Produktion benötigt)
+MathTrainerDotNetTest/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose*.yml
+nginx/
+
+# Dokumentation
+*.md
+
+# Datenbank-Dateien (werden im Volume erstellt)
+*.db
+*.db-wal
+*.db-shm
+
+# Sonstiges
+*.log
+*.tmp

@@ -1,0 +1,470 @@
+@page "/"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@inject ExerciseGeneratorService ExerciseGeneratorService
+@inject IExerciseRepository ExerciseRepository
+@inject IStudentRepository StudentRepository
+@inject IPdfService PdfService
+@inject SqLiteBackupService SqLiteBackupService
+@inject ILocalizationService LocalizationService
+@inject IJSRuntime JsRuntime
+@implements IDisposable
+
+<PageTitle>@LocalizationService["AppTitle"]</PageTitle>
+
+<div class="container">
+    <header class="header">
+        <div class="header-left">
+            <h1>🧮 @LocalizationService["AppTitle"]</h1>
+        </div>
+        <div class="header-controls">
+            <button class="toggle-btn" @onclick="OpenSettingsModal" title="@LocalizationService["Settings"]">
+                ⚙️
+            </button>
+            <button class="toggle-btn lang-btn" @onclick="ToggleLanguage" title="@(LocalizationService.IsGerman ? "Switch to English" : "Auf Deutsch wechseln")">
+                @if (LocalizationService.IsGerman)
+                {
+                    <svg class="flag-icon" viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg">
+                        <clipPath id="gb-clip"><rect width="60" height="30"/></clipPath>
+                        <g clip-path="url(#gb-clip)">
+                            <rect width="60" height="30" fill="#012169"/>
+                            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="4" clip-path="url(#gb-clip)"/>
+                            <path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10"/>
+                            <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6"/>
+                        </g>
+                    </svg>
+                    <span>EN</span>
+                }
+                else
+                {
+                    <svg class="flag-icon" viewBox="0 0 5 3" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="5" height="1" y="0" fill="#000"/>
+                        <rect width="5" height="1" y="1" fill="#D00"/>
+                        <rect width="5" height="1" y="2" fill="#FFCE00"/>
+                    </svg>
+                    <span>DE</span>
+                }
+            </button>
+            <button class="toggle-btn" @onclick="ToggleTheme" title="@LocalizationService["ToggleTheme"]">
+                @(isDarkTheme ? "☀️" : "🌙")
+            </button>
+            @if (exercises.Any())
+            {
+                <button class="btn-reveal @(showAllResults ? "active" : "")" @onclick="ToggleShowAllResults">
+                    @(showAllResults ? $"🙈 {LocalizationService["HideResults"]}" : $"👁️ {LocalizationService["ShowAllResults"]}")
+                </button>
+            }
+        </div>
+    </header>
+
+    @if (!exercises.Any())
+    {
+        <SetupPanel 
+            Students="@students"
+            @bind-SelectedStudentId="selectedStudentId"
+            @bind-NewStudentName="newStudentName"
+            @bind-SelectedOperation="selectedOperation"
+            @bind-MinValue="minValue"
+            @bind-MaxValue="maxValue"
+            @bind-ExerciseCount="exerciseCount"
+            @bind-OperandCount="operandCount"
+            @bind-LoadId="loadId"
+            IsLoading="@isLoading"
+            OnGenerateRequested="GenerateExercises"
+            OnLoadRequested="LoadExercises" />
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message">@errorMessage</div>
+        }
+    }
+    else
+    {
+        <div class="exercise-panel">
+            <div class="exercise-info">
+                <span class="exercise-id">ID: <strong>@currentPublicId</strong></span>
+                <span class="exercise-student">👤 @currentStudentName</span>
+                <span class="exercise-type">@GetLocalizedOperationName(currentOperationType)</span>
+                <span class="exercise-range">@LocalizationService["Range"]: @currentMinValue - @currentMaxValue</span>
+                <span class="exercise-stats">
+                    ✅ @exercises.Count(e => e.IsCorrect == true) / @exercises.Count
+                </span>
+            </div>
+            
+            <ExerciseGrid 
+                Exercises="@exercises"
+                ShowAllResults="@showAllResults"
+                OnAnswerInput="HandleAnswerInput"
+                OnCheckAnswer="CheckAnswer" />
+            
+            <div class="action-buttons">
+                <button class="btn-primary" @onclick="DownloadPdf">
+                    📄 @LocalizationService["DownloadPdf"]
+                </button>
+                <button class="btn-primary" @onclick="DownloadSolutionPdf">
+                    ✅ @LocalizationService["DownloadSolutions"]
+                </button>
+                <button class="btn-primary" @onclick="ResetExercises">
+                    🔄 @LocalizationService["NewExercises"]
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+@if (showSettingsModal)
+{
+    <SettingsModal 
+        DbStats="@dbStats"
+        IsBackupInProgress="@isBackupInProgress"
+        IsRestoreInProgress="@isRestoreInProgress"
+        SelectedBackupFile="@selectedBackupFile"
+        Message="@settingsMessage"
+        MessageIsError="@settingsMessageIsError"
+        OnClose="CloseSettingsModal"
+        OnBackup="CreateBackup"
+        OnFileSelected="OnBackupFileSelected"
+        OnRestore="RestoreBackup" />
+}
+
+@code {
+    private List<IExerciseViewModel> exercises = new();
+    private List<Student> students = new();
+    
+    // Settings
+    private bool isDarkTheme = false;
+    
+    // Input fields
+    private int selectedStudentId;
+    private string newStudentName = string.Empty;
+    private OperationType selectedOperation = OperationType.Multiplication;
+    private int minValue = 1;
+    private int maxValue = 10;
+    private int exerciseCount = 20;
+    private int operandCount = 2;
+    private string loadId = string.Empty;
+    
+    // Current state
+    private string currentPublicId = string.Empty;
+    private string currentStudentName = string.Empty;
+    private int currentMinValue;
+    private int currentMaxValue;
+    private OperationType currentOperationType;
+    private DateTime currentCreatedAt;
+    private int currentOperandCount = 2;
+    
+    private bool showAllResults;
+    private bool isLoading;
+    private string errorMessage = string.Empty;
+    
+    // Settings Modal
+    private bool showSettingsModal;
+    private DatabaseStats? dbStats;
+    private bool isBackupInProgress;
+    private bool isRestoreInProgress;
+    private IBrowserFile? selectedBackupFile;
+    private string settingsMessage = string.Empty;
+    private bool settingsMessageIsError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        LocalizationService.OnLanguageChanged += OnLanguageChanged;
+        await LoadStudentsAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var savedLang = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "mathtrainer-lang");
+            var savedTheme = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "mathtrainer-theme");
+            
+            if (!string.IsNullOrEmpty(savedLang))
+            {
+                LocalizationService.SetLanguage(savedLang);
+            }
+            
+            if (!string.IsNullOrEmpty(savedTheme))
+            {
+                isDarkTheme = savedTheme == "dark";
+                await JsRuntime.InvokeVoidAsync("document.documentElement.setAttribute", "data-theme", isDarkTheme ? "dark" : "light");
+            }
+            
+            StateHasChanged();
+        }
+    }
+
+    private void OnLanguageChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => LocalizationService.OnLanguageChanged -= OnLanguageChanged;
+
+    private async Task LoadStudentsAsync() => students = await StudentRepository.GetAsyncAllStudents().ToListAsync();
+
+    private async Task ToggleLanguage()
+    {
+        LocalizationService.ToggleLanguage();
+        await JsRuntime.InvokeVoidAsync("localStorage.setItem", "mathtrainer-lang", LocalizationService.CurrentLanguage);
+    }
+
+    private async Task ToggleTheme()
+    {
+        isDarkTheme = !isDarkTheme;
+        await JsRuntime.InvokeVoidAsync("document.documentElement.setAttribute", "data-theme", isDarkTheme ? "dark" : "light");
+        await JsRuntime.InvokeVoidAsync("localStorage.setItem", "mathtrainer-theme", isDarkTheme ? "dark" : "light");
+    }
+
+    private string GetLocalizedOperationName(OperationType op) => op switch
+    {
+        OperationType.Multiplication => LocalizationService["Multiplication"],
+        OperationType.Division => LocalizationService["Division"],
+        OperationType.Addition => LocalizationService["Addition"],
+        OperationType.Subtraction => LocalizationService["Subtraction"],
+        OperationType.MultiplicationDivision => LocalizationService["MultiplicationDivision"],
+        OperationType.AdditionSubtraction => LocalizationService["AdditionSubtraction"],
+        OperationType.All => LocalizationService["AllOperations"],
+        _ => op.ToString()
+    };
+
+    private async Task GenerateExercises()
+    {
+        if (selectedStudentId == 0 && string.IsNullOrWhiteSpace(newStudentName))
+        {
+            errorMessage = LocalizationService["ErrorSelectStudent"];
+            return;
+        }
+        
+        if (minValue >= maxValue)
+        {
+            errorMessage = LocalizationService["ErrorMinMax"];
+            return;
+        }
+        
+        var hasDivision = selectedOperation is OperationType.Division or OperationType.MultiplicationDivision or OperationType.All;
+            
+        if (minValue < 1 && hasDivision)
+        {
+            errorMessage = LocalizationService["ErrorMinValueDivision"];
+            return;
+        }
+
+        if (exerciseCount is < 5 or > 100)
+        {
+            errorMessage = LocalizationService["ErrorExerciseCount"];
+            return;
+        }
+        
+        errorMessage = string.Empty;
+        isLoading = true;
+        
+        try
+        {
+            Student student;
+            if (selectedStudentId > 0)
+            {
+                student = (await StudentRepository.GetStudentByIdAsync(selectedStudentId))!;
+            }
+            else
+            {
+                student = await StudentRepository.GetOrCreateStudentAsync(newStudentName);
+                await LoadStudentsAsync();
+            }
+            
+            var exerciseSetViewModel = await ExerciseGeneratorService.GenerateExercisesAsync(
+                student.Id, minValue, maxValue, exerciseCount, selectedOperation, operandCount);
+            
+            var (publicId, generatedExercises, createdAt, opCount) = exerciseSetViewModel;
+            
+            currentPublicId = publicId;
+            currentStudentName = student.Name;
+            currentMinValue = minValue;
+            currentMaxValue = maxValue;
+            currentOperationType = selectedOperation;
+            currentCreatedAt = createdAt;
+            currentOperandCount = opCount;
+            exercises = generatedExercises.ToList();
+            showAllResults = false;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadExercises()
+    {
+        if (string.IsNullOrWhiteSpace(loadId) || loadId.Length != 6)
+        {
+            errorMessage = LocalizationService["ErrorInvalidId"];
+            return;
+        }
+        
+        errorMessage = string.Empty;
+        isLoading = true;
+        
+        try
+        {
+            var result = await ExerciseRepository.LoadExercisesByIdAsync(loadId);
+            
+            if (!result.Found)
+            {
+                errorMessage = LocalizationService.GetString("ErrorNotFound", loadId.ToUpperInvariant());
+                return;
+            }
+            
+            currentPublicId = loadId.ToUpperInvariant();
+            currentStudentName = result.StudentName;
+            currentMinValue = result.MinValue;
+            currentMaxValue = result.MaxValue;
+            currentOperationType = result.OperationType;
+            currentCreatedAt = result.CreatedAt;
+            currentOperandCount = result.OperandCount;
+            exercises = result.Exercises;
+            showAllResults = false;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void HandleAnswerInput((int Index, string Value) args)
+    {
+        exercises[args.Index].UserAnswer = args.Value;
+        exercises[args.Index].IsCorrect = null;
+    }
+
+    private void CheckAnswer(int index)
+    {
+        if (!string.IsNullOrWhiteSpace(exercises[index].UserAnswer))
+        {
+            exercises[index].CheckAnswer();
+        }
+    }
+
+    private void ToggleShowAllResults()
+    {
+        showAllResults = !showAllResults;
+        foreach (var exercise in exercises)
+        {
+            exercise.ShowResult = showAllResults;
+        }
+    }
+
+    private async Task DownloadPdf()
+    {
+        var pdfBytes = PdfService.GenerateExercisePdf(
+            currentPublicId, exercises, currentMinValue, currentMaxValue,
+            currentOperationType, currentStudentName, currentCreatedAt);
+
+        var fileName = PdfService.GenerateFileName(currentPublicId, currentOperationType, currentCreatedAt, currentStudentName);
+        
+        await JsRuntime.InvokeVoidAsync("downloadFile", fileName, 
+            Convert.ToBase64String(pdfBytes), "application/pdf");
+    }
+
+    private async Task DownloadSolutionPdf()
+    {
+        var pdfBytes = PdfService.GenerateSolutionPdf(
+            currentPublicId, exercises, currentMinValue, currentMaxValue,
+            currentOperationType, currentStudentName, currentCreatedAt);
+        
+        var fileName = PdfService.GenerateFileName(currentPublicId, currentOperationType, currentCreatedAt, currentStudentName, isSolution: true);
+        
+        await JsRuntime.InvokeVoidAsync("downloadFile", fileName, 
+            Convert.ToBase64String(pdfBytes), "application/pdf");
+    }
+
+    private void ResetExercises()
+    {
+        exercises.Clear();
+        currentPublicId = string.Empty;
+        currentStudentName = string.Empty;
+        loadId = string.Empty;
+        newStudentName = string.Empty;
+        showAllResults = false;
+        errorMessage = string.Empty;
+    }
+    
+    private async Task OpenSettingsModal()
+    {
+        showSettingsModal = true;
+        settingsMessage = string.Empty;
+        selectedBackupFile = null;
+        dbStats = await SqLiteBackupService.GetDatabaseStatsAsync();
+    }
+    
+    private void CloseSettingsModal() => showSettingsModal = false;
+    
+    private async Task CreateBackup()
+    {
+        isBackupInProgress = true;
+        settingsMessage = string.Empty;
+        
+        try
+        {
+            var backupBytes = await SqLiteBackupService.CreateBackupAsync();
+            var fileName = SqLiteBackupService.GenerateBackupFileName();
+            
+            await JsRuntime.InvokeVoidAsync("downloadFile", fileName,
+                Convert.ToBase64String(backupBytes), "application/octet-stream");
+            
+            settingsMessage = LocalizationService["BackupSuccess"];
+            settingsMessageIsError = false;
+        }
+        catch (Exception ex)
+        {
+            settingsMessage = $"Error: {ex.Message}";
+            settingsMessageIsError = true;
+        }
+        finally
+        {
+            isBackupInProgress = false;
+        }
+    }
+    
+    private void OnBackupFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedBackupFile = e.File;
+        settingsMessage = string.Empty;
+    }
+    
+    private async Task RestoreBackup()
+    {
+        if (selectedBackupFile == null) return;
+        
+        isRestoreInProgress = true;
+        settingsMessage = string.Empty;
+        
+        try
+        {
+            using var memoryStream = new MemoryStream();
+            await selectedBackupFile.OpenReadStream(maxAllowedSize: 100 * 1024 * 1024).CopyToAsync(memoryStream);
+            var backupData = memoryStream.ToArray();
+            
+            var result = await SqLiteBackupService.RestoreBackupAsync(backupData);
+            
+            if (result.Success)
+            {
+                settingsMessage = result.Message;
+                settingsMessageIsError = false;
+                await LoadStudentsAsync();
+                dbStats = await SqLiteBackupService.GetDatabaseStatsAsync();
+            }
+            else
+            {
+                settingsMessage = result.Message;
+                settingsMessageIsError = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            settingsMessage = LocalizationService.GetString("RestoreError", ex.Message);
+            settingsMessageIsError = true;
+        }
+        finally
+        {
+            isRestoreInProgress = false;
+            selectedBackupFile = null;
+        }
+    }
+}

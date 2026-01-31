@@ -1,0 +1,10 @@
+global using MathTrainerDotNet.Data;
+global using MathTrainerDotNet.Models;
+global using MathTrainerDotNet.Services;
+global using MathTrainerDotNet.Services.Id;
+global using MathTrainerDotNet.Services.Localization;
+global using MathTrainerDotNet.Services.Pdf;
+global using MathTrainerDotNet.Services.Repository;
+global using MathTrainerDotNet.ViewModels;
+global using Microsoft.EntityFrameworkCore;
+global using Xunit;

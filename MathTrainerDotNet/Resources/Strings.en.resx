@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+  
+    <!-- App -->
+    <data name="AppTitle" xml:space="preserve"><value>Math Trainer</value></data>
+
+    <!-- Setup Panel -->
+    <data name="CreateNewSeries" xml:space="preserve"><value>Create New Exercise Series</value></data>
+    <data name="Student" xml:space="preserve"><value>Student</value></data>
+    <data name="CreateNewStudent" xml:space="preserve"><value>-- Create New Student --</value></data>
+    <data name="StudentNamePlaceholder" xml:space="preserve"><value>Student's name</value></data>
+    <data name="OperationType" xml:space="preserve"><value>Operation Type</value></data>
+    <data name="NumberRange" xml:space="preserve"><value>Number Range</value></data>
+    <data name="From" xml:space="preserve"><value>From</value></data>
+    <data name="To" xml:space="preserve"><value>to</value></data>
+    <data name="ExerciseCount" xml:space="preserve"><value>Number of Exercises</value></data>
+    <data name="OperandCount" xml:space="preserve"><value>Number of Operands</value></data>
+    <data name="GenerateExercises" xml:space="preserve"><value>Generate Exercises</value></data>
+    <data name="Generating" xml:space="preserve"><value>Generating...</value></data>
+
+    <!-- Operation Types -->
+    <data name="Multiplication" xml:space="preserve"><value>Multiplication</value></data>
+    <data name="Division" xml:space="preserve"><value>Division</value></data>
+    <data name="Addition" xml:space="preserve"><value>Addition</value></data>
+    <data name="Subtraction" xml:space="preserve"><value>Subtraction</value></data>
+    <data name="MultiplicationDivision" xml:space="preserve"><value>Multiplication &amp; Division</value></data>
+    <data name="AdditionSubtraction" xml:space="preserve"><value>Addition &amp; Subtraction</value></data>
+    <data name="AllOperations" xml:space="preserve"><value>All Operations</value></data>
+
+    <!-- Load Section -->
+    <data name="OrLoadSeries" xml:space="preserve"><value>Or: Load Exercise Series</value></data>
+    <data name="EnterExerciseId" xml:space="preserve"><value>Enter Exercise ID</value></data>
+    <data name="Load" xml:space="preserve"><value>Load</value></data>
+
+    <!-- Exercise Panel -->
+    <data name="ShowAllResults" xml:space="preserve"><value>Show Solutions</value></data>
+    <data name="HideResults" xml:space="preserve"><value>Hide Solutions</value></data>
+    <data name="DownloadPdf" xml:space="preserve"><value>Download as PDF</value></data>
+    <data name="DownloadSolutions" xml:space="preserve"><value>Download Solutions</value></data>
+    <data name="NewExercises" xml:space="preserve"><value>New Exercises</value></data>
+    <data name="Range" xml:space="preserve"><value>Number Range</value></data>
+
+    <!-- Error Messages -->
+    <data name="ErrorSelectStudent" xml:space="preserve"><value>Please select a student or enter a new name.</value></data>
+    <data name="ErrorMinMax" xml:space="preserve"><value>Minimum value must be less than maximum value.</value></data>
+    <data name="ErrorMinValueDivision" xml:space="preserve"><value>For division, minimum value must be at least 1.</value></data>
+    <data name="ErrorExerciseCount" xml:space="preserve"><value>Number of exercises must be between 5 and 100.</value></data>
+    <data name="ErrorInvalidId" xml:space="preserve"><value>Please enter a valid 6-character ID.</value></data>
+    <data name="ErrorNotFound" xml:space="preserve"><value>No exercise series found with ID '{0}'.</value></data>
+
+    <!-- PDF -->
+    <data name="PdfSolutions" xml:space="preserve"><value>SOLUTIONS</value></data>
+    <data name="PdfName" xml:space="preserve"><value>Name</value></data>
+    <data name="PdfPoints" xml:space="preserve"><value>Points</value></data>
+    <data name="PdfCount" xml:space="preserve"><value>Count</value></data>
+    <data name="PdfExercises" xml:space="preserve"><value>Exercises</value></data>
+    <data name="PdfEnterIdHint" xml:space="preserve"><value>Enter ID {0} to check your answers!</value></data>
+    <data name="PdfSolutionSheet" xml:space="preserve"><value>SOLUTION SHEET - For Teachers/Parents Only</value></data>
+
+    <!-- Database Backup/Restore -->
+    <data name="Settings" xml:space="preserve"><value>Settings</value></data>
+    <data name="DatabaseManagement" xml:space="preserve"><value>Database Management</value></data>
+    <data name="Backup" xml:space="preserve"><value>Create Backup</value></data>
+    <data name="Restore" xml:space="preserve"><value>Restore</value></data>
+    <data name="SelectBackupFile" xml:space="preserve"><value>Select backup file</value></data>
+    <data name="DatabaseStats" xml:space="preserve"><value>Database Statistics</value></data>
+    <data name="Students" xml:space="preserve"><value>Students</value></data>
+    <data name="ExerciseSets" xml:space="preserve"><value>Exercise Sets</value></data>
+    <data name="Exercises" xml:space="preserve"><value>Exercises</value></data>
+    <data name="FileSize" xml:space="preserve"><value>File Size</value></data>
+    <data name="BackupSuccess" xml:space="preserve"><value>Backup created successfully.</value></data>
+    <data name="RestoreSuccess" xml:space="preserve"><value>Database restored: {0} students, {1} exercise sets.</value></data>
+    <data name="RestoreError" xml:space="preserve"><value>Error restoring: {0}</value></data>
+    <data name="RestoreWarning" xml:space="preserve"><value>Warning: The current database will be overwritten!</value></data>
+    <data name="Close" xml:space="preserve"><value>Close</value></data>
+    <data name="CreatingBackup" xml:space="preserve"><value>Creating backup...</value></data>
+    <data name="RestoringBackup" xml:space="preserve"><value>Restoring...</value></data>
+    <data name="DatabaseFileNotFound" xml:space="preserve"><value>Database not found.</value></data>
+    <data name="InvalidSQLiteFile" xml:space="preserve"><value>Invalid SQLite file.</value></data>
+    <data name="NoDataReceived" xml:space="preserve"><value>No data received.</value></data>
+    <data name="DivideByZero" xml:space="preserve"><value>Division by zero.</value></data>
+    <data name="RestoreErrorGeneral" xml:space="preserve"><value>Error during restore: {0}</value></data>
+    <data name="DatabaseValidationFailed" xml:space="preserve"><value>Database validation failed: {0}</value></data>
+    <data name="TableNotFound" xml:space="preserve"><value>Table '{0}' not found. This is not a valid MathTrainer database.</value></data>
+    <data name="ToggleTheme" xml:space="preserve"><value>Toggle Theme</value></data>
+    <data name="PdfFileNameSolution" xml:space="preserve">
+        <value>Solution</value>
+    </data>
+    <data name="FileNameAddition" xml:space="preserve">
+        <value>Addition</value>
+    </data>
+    <data name="FileNameAllOperation" xml:space="preserve">
+        <value>All</value>
+    </data>
+    <data name="FileNameMultiplication" xml:space="preserve">
+        <value>Multiplication</value>
+    </data>
+    <data name="FileNameDivision" xml:space="preserve">
+        <value>Division</value>
+    </data>
+    <data name="FileNameSubtraction" xml:space="preserve">
+        <value>Subtraction</value>
+    </data>
+    <data name="FileNameAdditionSubtraction" xml:space="preserve">
+        <value>Addition_and_Subtraction</value>
+    </data>
+    <data name="FileNameMultiplicationDivision" xml:space="preserve">
+        <value>Multiplication_and_Division</value>
+    </data>
+</root>
