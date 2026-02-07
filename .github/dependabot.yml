@@ -10,6 +10,11 @@ updates:
     labels:
       - "dependencies"
       - "nuget"
+    target-branch: "develop"
+    assignees:
+      - "shinji-san"
+    reviewers:
+      - "shinji-san"
 
   # Docker
   - package-ecosystem: "docker"
@@ -21,6 +26,11 @@ updates:
     labels:
       - "dependencies"
       - "docker"
+    target-branch: "develop"
+    assignees:
+      - "shinji-san"
+    reviewers:
+      - "shinji-san"
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -32,3 +42,8 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
+    target-branch: "develop"
+    assignees:
+      - "shinji-san"
+    reviewers:
+      - "shinji-san"
