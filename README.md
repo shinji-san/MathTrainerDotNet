@@ -1,5 +1,8 @@
 # MathTrainerDotNet
 
+[![Build and Test](https://github.com/shinji-san/MathTrainerDotNet/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/shinji-san/MathTrainerDotNet/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 🇩🇪 **[Deutsche Version](#deutsch)** | 🇬🇧 **[English Version](#english)**
 
 ---
