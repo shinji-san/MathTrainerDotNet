@@ -1,4 +1,4 @@
-# Build-Artefakte
+# Build artifacts
 **/bin/
 **/obj/
 **/out/
@@ -11,7 +11,7 @@
 *.user
 *.suo
 
-# Test-Projekt (nicht für Produktion benötigt)
+# Test project (not required for production)
 MathTrainerDotNetTest/
 
 # Git
@@ -21,16 +21,15 @@ MathTrainerDotNetTest/
 # Docker
 Dockerfile
 docker-compose*.yml
-nginx/
 
-# Dokumentation
+# Documentation
 *.md
 
-# Datenbank-Dateien (werden im Volume erstellt)
+# Database files (created in volume)
 *.db
 *.db-wal
 *.db-shm
 
-# Sonstiges
+# Miscellaneous
 *.log
 *.tmp
