@@ -55,7 +55,7 @@ Alternativ kann das offizielle Docker-Image verwendet werden.
 **Direkt mit Docker:**
 
 ```bash
-docker run -d -p 8080:80 --name mathtrainer -v mathtrainer-data:/app/data shinji-san/mathtrainerdotnet:latest
+docker run -d -p 8080:80 -v mathtrainer-data:/app/data shinjisan/mathtrainerdotnet:latest
 ```
 
 **Mit Docker Compose (Produktiv-Setup):**
@@ -124,7 +124,7 @@ Alternatively, you can use the official Docker image.
 **Directly with Docker:**
 
 ```bash
-docker run -d -p 8080:80 --name mathtrainer -v mathtrainer-data:/app/data shinji-san/mathtrainerdotnet:latest
+docker run -d -p 8080:80 -v mathtrainer-data:/app/data shinjisan/mathtrainerdotnet:latest
 ```
 
 **With Docker Compose (Production setup):**
