@@ -3,6 +3,8 @@
 [![Build and Test](https://github.com/shinji-san/MathTrainerDotNet/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/shinji-san/MathTrainerDotNet/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+![Math Trainder .NET Demo](doc/img/mathtrainerdemo.gif)
+
 🇩🇪 **[Deutsche Version](#deutsch)** | 🇬🇧 **[English Version](#english)**
 
 ---
@@ -65,6 +67,8 @@ DOCKERHUB_USERNAME=shinji-san VERSION=latest docker compose -f docker-compose.pr
 ```
 
 Die Anwendung ist dann unter `http://localhost:8080` erreichbar.
+
+![Docker Compose Demo](doc/img/docker-compose.gif)
 
 ### Tests ausführen
 
@@ -132,6 +136,8 @@ DOCKERHUB_USERNAME=shinji-san VERSION=latest docker compose -f docker-compose.pr
 ```
 
 The application will be available at `http://localhost:8080`.
+
+![Docker Compose Demo](doc/img/docker-compose.gif)
 
 ### Run Tests
 
