@@ -36,6 +36,8 @@ Eine Blazor-Webanwendung für Grundschüler zum Üben aller vier Grundrechenarte
 
 ### Installation & Start
 
+#### Lokal ausführen
+
 ```bash
 cd MathTrainerDotNet
 dotnet restore
@@ -43,6 +45,26 @@ dotnet run --project MathTrainerDotNet
 ```
 
 Die Anwendung ist unter `http://localhost:5000` erreichbar.
+
+#### Docker (Image von Docker Hub)
+
+Alternativ kann das offizielle Docker-Image verwendet werden.
+
+**Direkt mit Docker:**
+
+```bash
+docker run -d -p 8080:80 --name mathtrainer -v mathtrainer-data:/app/data shinji-san/mathtrainerdotnet:latest
+```
+
+**Mit Docker Compose (Produktiv-Setup):**
+
+Nutze die `docker-compose.prod.yml`, um die Anwendung einfach zu starten:
+
+```bash
+DOCKERHUB_USERNAME=shinji-san VERSION=latest docker compose -f docker-compose.prod.yml up -d
+```
+
+Die Anwendung ist dann unter `http://localhost:8080` erreichbar.
 
 ### Tests ausführen
 
@@ -81,6 +103,8 @@ A Blazor web application for elementary school students to practice all four bas
 
 ### Installation & Start
 
+#### Run locally
+
 ```bash
 cd MathTrainerDotNet
 dotnet restore
@@ -88,6 +112,26 @@ dotnet run --project MathTrainerDotNet
 ```
 
 The application is available at `http://localhost:5000`.
+
+#### Docker (Image from Docker Hub)
+
+Alternatively, you can use the official Docker image.
+
+**Directly with Docker:**
+
+```bash
+docker run -d -p 8080:80 --name mathtrainer -v mathtrainer-data:/app/data shinji-san/mathtrainerdotnet:latest
+```
+
+**With Docker Compose (Production setup):**
+
+Use `docker-compose.prod.yml` to easily start the application:
+
+```bash
+DOCKERHUB_USERNAME=shinji-san VERSION=latest docker compose -f docker-compose.prod.yml up -d
+```
+
+The application will be available at `http://localhost:8080`.
 
 ### Run Tests
 
