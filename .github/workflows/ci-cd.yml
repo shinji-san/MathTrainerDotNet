@@ -86,9 +86,9 @@ jobs:
           cache-to: type=gha,mode=max
 
       # Gates docker-publish as well, which needs this job.
-      # ignore-unfixed is deliberate: the Debian base will accumulate advisories
-      # with no available fix, and failing on those would only get the gate
-      # switched off.
+      # ignore-unfixed is deliberate: the OS layer of the runtime image
+      # (Ubuntu 24.04) will accumulate advisories with no available fix, and
+      # failing on those would only get the gate switched off.
       - name: Scan image for known vulnerabilities
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
