@@ -73,7 +73,7 @@ public class StudentRepositoryTests : IDisposable
     public async Task GetAllStudentsAsync_Empty_ShouldReturnEmptyList()
     {
         // Act
-        var students = await this.repository.GetAsyncAllStudents().ToListAsync();
+        var students = await this.repository.GetAsyncAllStudents().ToListAsync(TestContext.Current.CancellationToken);
         
         // Assert
         Assert.Empty(students);
@@ -88,7 +88,7 @@ public class StudentRepositoryTests : IDisposable
         await this.repository.GetOrCreateStudentAsync("Clara");
         
         // Act
-        var students = await this.repository.GetAsyncAllStudents().ToListAsync();
+        var students = await this.repository.GetAsyncAllStudents().ToListAsync(TestContext.Current.CancellationToken);
         
         // Assert
         Assert.Equal(3, students.Count);
@@ -103,7 +103,7 @@ public class StudentRepositoryTests : IDisposable
         await this.repository.GetOrCreateStudentAsync("Ben");
         
         // Act
-        var students = await this.repository.GetAsyncAllStudents().ToListAsync();
+        var students = await this.repository.GetAsyncAllStudents().ToListAsync(TestContext.Current.CancellationToken);
         
         // Assert
         Assert.Equal("Anna", students[0].Name);

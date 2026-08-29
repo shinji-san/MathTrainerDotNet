@@ -45,7 +45,7 @@ public class ExerciseRepositoryTests : IDisposable
         await this.exerciseRepository.CreateExerciseSetAsync(exerciseSet);
 
         // Assert
-        var savedSet = await this.appDbContext.ExerciseSets.FirstOrDefaultAsync(es => es.PublicId == publicId);
+        var savedSet = await this.appDbContext.ExerciseSets.FirstOrDefaultAsync(es => es.PublicId == publicId, TestContext.Current.CancellationToken);
         Assert.NotNull(savedSet);
         Assert.Equal(1, savedSet.StudentId);
     }
@@ -71,7 +71,7 @@ public class ExerciseRepositoryTests : IDisposable
             }
         };
         this.appDbContext.ExerciseSets.Add(exerciseSet);
-        await this.appDbContext.SaveChangesAsync();
+        await this.appDbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
         var result = await this.exerciseRepository.LoadExercisesByIdAsync(publicId);
@@ -103,7 +103,7 @@ public class ExerciseRepositoryTests : IDisposable
             Exercises = new List<Exercise>()
         };
         this.appDbContext.ExerciseSets.Add(exerciseSet);
-        await this.appDbContext.SaveChangesAsync();
+        await this.appDbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
         var result = await this.exerciseRepository.LoadExercisesByIdAsync("case01");

@@ -68,7 +68,7 @@ public class ExerciseGeneratorServiceTests : IDisposable
         // Assert
         var savedSet = await this.appDbContext.ExerciseSets
             .Include(es => es.Exercises)
-            .FirstOrDefaultAsync(es => es.PublicId == publicId);
+            .FirstOrDefaultAsync(es => es.PublicId == publicId, TestContext.Current.CancellationToken);
         
         Assert.NotNull(savedSet);
         Assert.Equal(5, savedSet.Exercises.Count());
