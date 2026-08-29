@@ -123,9 +123,16 @@ public class ExerciseGeneratorServiceTests : IDisposable
         // Assert
         foreach (var exercise in exercises)
         {
-            var result = exercise.CorrectResult;
-            Assert.True(result == (int)result, 
-                $"Division result {result} should be an integer");
+            var operands = exercise.Operands.ToArray();
+
+            Assert.Equal(SingleOperation.Division, Assert.Single(exercise.Operators));
+            Assert.Equal(2, operands.Length);
+
+            var (dividend, divisor) = (operands[0], operands[1]);
+            Assert.NotEqual(0, divisor);
+            Assert.True(dividend % divisor == 0,
+                $"Division {dividend} / {divisor} should divide evenly");
+            Assert.Equal(dividend / divisor, exercise.CorrectResult);
         }
     }
     
