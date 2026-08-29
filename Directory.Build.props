@@ -1,0 +1,24 @@
+<Project>
+
+  <PropertyGroup>
+    <!--
+      Fail the build on NuGet audit findings instead of only warning.
+
+      NuGetAudit is already on and already covers transitive packages
+      (NuGetAuditMode=all, NuGetAuditLevel=low), so the advisories were being
+      reported all along: CVE-2025-6965 in a transitive SQLitePCLRaw was
+      printed on every restore for roughly six months while CI stayed green.
+      Only the escalation to an error was missing.
+
+      Note that "dotnet list package" with the vulnerable switch is not a
+      usable gate. It reports findings but still exits 0.
+
+      Appending to $(WarningsAsErrors) rather than overwriting it preserves
+      the escalations the SDK already sets (NU1605, SYSLIB0011).
+
+      NU1901/2/3/4 = low/moderate/high/critical severity advisories.
+    -->
+    <WarningsAsErrors>$(WarningsAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsAsErrors>
+  </PropertyGroup>
+
+</Project>
