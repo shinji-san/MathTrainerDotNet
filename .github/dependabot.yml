@@ -1,3 +1,17 @@
+# Grouping exists because of a concrete failure, not for tidiness.
+#
+# Between March and August 2026 Dependabot stopped proposing NuGet and GitHub
+# Actions updates entirely. Both ecosystems had reached their
+# open-pull-requests-limit (5 and 3) with stale PRs nobody merged or closed,
+# and at the limit Dependabot skips the ecosystem silently -- no PR, no error,
+# no notification. The last nuget run was 2026-03-16, the last github_actions
+# run 2026-03-09. Docker, which had no open PRs, kept running until May.
+#
+# Grouping minor and patch updates into one PR per ecosystem keeps the queue
+# from filling up in the first place. Major updates stay ungrouped so each one
+# still gets reviewed on its own -- the xunit v2 to v3 major needed real
+# migration work, which would have been lost in a combined PR.
+
 version: 2
 updates:
   # NuGet packages
@@ -6,7 +20,14 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
+    groups:
+      nuget-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
     labels:
       - "dependencies"
       - "nuget"
@@ -22,7 +43,14 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 5
+    groups:
+      docker-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
     labels:
       - "dependencies"
       - "docker"
@@ -32,13 +60,21 @@ updates:
     reviewers:
       - "shinji-san"
 
-  # GitHub Actions
+  # GitHub Actions -- pinned to commit SHAs in ci-cd.yml; Dependabot reads the
+  # trailing "# vX.Y.Z" comment and keeps SHA and comment in sync.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 5
+    groups:
+      github-actions-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
     labels:
       - "dependencies"
       - "github-actions"
