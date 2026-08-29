@@ -63,7 +63,7 @@ docker run -d -p 8080:80 -v mathtrainer-data:/app/data shinjisan/mathtrainerdotn
 Nutze die `docker-compose.prod.yml`, um die Anwendung einfach zu starten:
 
 ```bash
-DOCKERHUB_USERNAME=shinji-san VERSION=latest docker compose -f docker-compose.prod.yml up -d
+DOCKERHUB_USERNAME=shinjisan VERSION=latest docker compose -f docker-compose.prod.yml up -d
 ```
 
 Die Anwendung ist dann unter `http://localhost:8080` erreichbar.
@@ -132,7 +132,7 @@ docker run -d -p 8080:80 -v mathtrainer-data:/app/data shinjisan/mathtrainerdotn
 Use `docker-compose.prod.yml` to easily start the application:
 
 ```bash
-DOCKERHUB_USERNAME=shinji-san VERSION=latest docker compose -f docker-compose.prod.yml up -d
+DOCKERHUB_USERNAME=shinjisan VERSION=latest docker compose -f docker-compose.prod.yml up -d
 ```
 
 The application will be available at `http://localhost:8080`.

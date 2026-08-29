@@ -110,10 +110,9 @@ jobs:
     # to v* tags independently of the if: condition above, records every publish
     # under Deployments, and is where the Docker Hub credentials should live so
     # they are not readable by every other job in the repository.
-    # No url: here on purpose -- DOCKERHUB_USERNAME is currently a secret, so
-    # GitHub would mask it and render the link as .../r/***/mathtrainerdotnet.
-    # Worth adding once F-10 turns the username into a repository variable.
-    environment: dockerhub
+    environment:
+      name: dockerhub
+      url: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}
     
     steps:
       - name: Checkout code
@@ -138,7 +137,7 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
@@ -150,9 +149,9 @@ jobs:
           # Provenance is already emitted by default; an SBOM is not.
           sbom: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ steps.version.outputs.tag }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ steps.version.outputs.version }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+            ${{ vars.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ steps.version.outputs.tag }}
+            ${{ vars.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ steps.version.outputs.version }}
+            ${{ vars.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
           labels: |
