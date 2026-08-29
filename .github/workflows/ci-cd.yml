@@ -77,9 +77,27 @@ jobs:
         with:
           context: .
           push: false
+          # load makes the image available to the scanner below; pull re-resolves
+          # the base image so the scan cannot pass on a stale cached layer.
+          load: true
+          pull: true
           tags: ${{ env.DOCKER_IMAGE_NAME }}:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # Gates docker-publish as well, which needs this job.
+      # ignore-unfixed is deliberate: the Debian base will accumulate advisories
+      # with no available fix, and failing on those would only get the gate
+      # switched off.
+      - name: Scan image for known vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ env.DOCKER_IMAGE_NAME }}:test
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+          format: table
 
   docker-publish:
     name: Publish to Docker Hub
@@ -119,6 +137,9 @@ jobs:
         with:
           context: .
           push: true
+          pull: true
+          # Provenance is already emitted by default; an SBOM is not.
+          sbom: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ steps.version.outputs.tag }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ steps.version.outputs.version }}
