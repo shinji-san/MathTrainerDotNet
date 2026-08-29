@@ -2,7 +2,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Project files copy and dependencies restore
+# Project files copy and dependencies restore.
+# Directory.Build.props must be copied before the restore: it carries the
+# NuGet audit gate that escalates NU1901-NU1904 to errors. Without it the
+# image build would restore unaudited, so a vulnerable package could still be
+# baked into the published image even though CI rejects it.
+COPY Directory.Build.props ./
 COPY MathTrainerDotNet/*.csproj ./MathTrainerDotNet/
 RUN dotnet restore MathTrainerDotNet/MathTrainerDotNet.csproj
 
