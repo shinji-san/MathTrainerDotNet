@@ -105,6 +105,15 @@ jobs:
     timeout-minutes: 25
     needs: [build-and-test, docker-build]
     if: startsWith(github.ref, 'refs/tags/v')
+    # Publishing is the only step here that reaches outside the repository, so
+    # it runs against a named environment. The environment restricts deployment
+    # to v* tags independently of the if: condition above, records every publish
+    # under Deployments, and is where the Docker Hub credentials should live so
+    # they are not readable by every other job in the repository.
+    # No url: here on purpose -- DOCKERHUB_USERNAME is currently a secret, so
+    # GitHub would mask it and render the link as .../r/***/mathtrainerdotnet.
+    # Worth adding once F-10 turns the username into a repository variable.
+    environment: dockerhub
     
     steps:
       - name: Checkout code
