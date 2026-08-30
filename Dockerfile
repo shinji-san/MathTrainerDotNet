@@ -73,7 +73,13 @@ stdout_logfile=/dev/stdout
 stdout_logfile_maxbytes=0
 stderr_logfile=/dev/stderr
 stderr_logfile_maxbytes=0
-environment=ASPNETCORE_URLS="http://+:5000",ASPNETCORE_ENVIRONMENT="Production",ConnectionStrings__DefaultConnection="Data Source=/app/data/mathtrainer.db"
+# Loopback, not "+". nginx proxies to 127.0.0.1:5000 from inside this same
+# container, so every other interface Kestrel would bind is reachable only
+# by other containers on the same Docker network -- and reaching Kestrel
+# directly skips the rate limits, security headers and body-size cap that
+# nginx is here to apply. Splitting nginx into its own container later
+# means opening this back up.
+environment=ASPNETCORE_URLS="http://127.0.0.1:5000",ASPNETCORE_ENVIRONMENT="Production",ConnectionStrings__DefaultConnection="Data Source=/app/data/mathtrainer.db"
 EOF
 
 # Entrypoint script
