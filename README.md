@@ -55,7 +55,7 @@ Alternativ kann das offizielle Docker-Image verwendet werden.
 **Direkt mit Docker:**
 
 ```bash
-docker run -d -p 8080:80 -v mathtrainer-data:/app/data shinjisan/mathtrainerdotnet:latest
+docker run -d -p 8080:8080 -v mathtrainer-data:/app/data shinjisan/mathtrainerdotnet:latest
 ```
 
 **Mit Docker Compose (Produktiv-Setup):**
@@ -69,6 +69,21 @@ DOCKERHUB_USERNAME=shinjisan VERSION=latest docker compose -f docker-compose.pro
 Die Anwendung ist dann unter `http://localhost:8080` erreichbar.
 
 ![Docker Compose Demo](doc/img/docker-compose.gif)
+
+**Upgrade von einer Version vor dem Non-Root-Umbau:**
+
+Der Container läuft nicht mehr als `root`, sondern als UID 1654, und nginx lauscht
+im Container jetzt auf 8080 statt 80. Wer ein bestehendes Volume weiterbenutzt,
+übergibt es einmalig dem neuen Benutzer — sonst startet die App mit
+`attempt to write a readonly database` nicht:
+
+```bash
+docker compose down
+docker run --rm -v mathtrainer-data:/data alpine chown -R 1654:1654 /data
+docker compose -f docker-compose.prod.yml up -d
+```
+
+Port-Mappings müssen von `-p 8080:80` auf `-p 8080:8080` umgestellt werden.
 
 ### Tests ausführen
 
@@ -124,7 +139,7 @@ Alternatively, you can use the official Docker image.
 **Directly with Docker:**
 
 ```bash
-docker run -d -p 8080:80 -v mathtrainer-data:/app/data shinjisan/mathtrainerdotnet:latest
+docker run -d -p 8080:8080 -v mathtrainer-data:/app/data shinjisan/mathtrainerdotnet:latest
 ```
 
 **With Docker Compose (Production setup):**
@@ -138,6 +153,21 @@ DOCKERHUB_USERNAME=shinjisan VERSION=latest docker compose -f docker-compose.pro
 The application will be available at `http://localhost:8080`.
 
 ![Docker Compose Demo](doc/img/docker-compose.gif)
+
+**Upgrading from a version before the non-root change:**
+
+The container no longer runs as `root` but as UID 1654, and nginx now listens on
+8080 inside the container instead of 80. If you keep an existing volume, hand it
+to the new user once — otherwise the app fails to start with
+`attempt to write a readonly database`:
+
+```bash
+docker compose down
+docker run --rm -v mathtrainer-data:/data alpine chown -R 1654:1654 /data
+docker compose -f docker-compose.prod.yml up -d
+```
+
+Port mappings must change from `-p 8080:80` to `-p 8080:8080`.
 
 ### Run Tests
 

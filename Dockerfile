@@ -21,18 +21,24 @@ RUN dotnet publish -c Release -o /app/publish
 # Runtime Stage - with nginx
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 
-# install nginx and supervisor
+# install nginx and supervisor.
+# gosu is deliberately absent: nothing in this image switches user at runtime
+# any more, so a setuid-style helper would only be an escalation primitive.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
     supervisor \
-    gosu \
     && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
-RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+# The runtime base image already ships a non-root user (app, UID/GID 1654,
+# exported as APP_UID) with a real home directory. Reuse it instead of
+# creating a second one -- a system account from "useradd -r" gets a home
+# directory entry that is never created, which leaves $HOME unwritable.
 
-# Create directories
-RUN mkdir -p /app/data /var/log/supervisor
+# Create directories and hand them to that user. nginx and supervisor both
+# ship root-owned log directories, and neither can write there once the
+# master process is unprivileged.
+RUN mkdir -p /app/data /var/log/supervisor \
+    && chown -R $APP_UID:$APP_UID /app/data /var/log/supervisor /var/log/nginx
 
 # Copy app
 WORKDIR /app
@@ -46,9 +52,8 @@ RUN rm -f /etc/nginx/sites-enabled/default /etc/nginx/conf.d/default.conf
 RUN cat > /etc/supervisor/conf.d/supervisord.conf << 'EOF'
 [supervisord]
 nodaemon=true
-user=root
 logfile=/var/log/supervisor/supervisord.log
-pidfile=/var/run/supervisord.pid
+pidfile=/tmp/supervisord.pid
 
 [program:nginx]
 command=/usr/sbin/nginx -g "daemon off;"
@@ -60,7 +65,7 @@ stderr_logfile=/dev/stderr
 stderr_logfile_maxbytes=0
 
 [program:dotnet]
-command=gosu appuser dotnet /app/MathTrainerDotNet.dll
+command=dotnet /app/MathTrainerDotNet.dll
 directory=/app
 autostart=true
 autorestart=true
@@ -76,16 +81,31 @@ RUN cat > /usr/local/bin/docker-entrypoint.sh << 'EOF'
 #!/bin/sh
 set -e
 
-# Set data directory permissions
-mkdir -p /app/data
-chown -R appuser:appgroup /app/data
+# /app/data is created and chowned to UID 1654 at build time, so a *new* named
+# volume inherits that ownership. A volume written by an older release of this
+# image does not -- that one ran as root and left the database owned by a
+# different uid. This container cannot repair that, so say so here instead of
+# crash-looping on "attempt to write a readonly database" a second later.
+if [ ! -w /app/data ]; then
+    echo "FATAL: /app/data is not writable by uid $(id -u)." >&2
+    echo "  This image no longer runs as root. If you are upgrading from an" >&2
+    echo "  earlier version, hand the existing volume to the new user once:" >&2
+    echo "    docker run --rm -v mathtrainer-data:/data alpine chown -R 1654:1654 /data" >&2
+    exit 1
+fi
 
 # Start supervisor (manages nginx + dotnet)
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 EOF
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Expose port (nginx)
-EXPOSE 80
+# Drop privileges for everything from here on: supervisor, the nginx master
+# and the app itself all run as this user. Numeric so that a Kubernetes
+# runAsNonRoot check can verify it without resolving /etc/passwd.
+USER $APP_UID
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+# Expose port (nginx). 8080 rather than 80 because an unprivileged process
+# cannot bind a port below 1024.
+EXPOSE 8080
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
