@@ -19,7 +19,7 @@ WORKDIR /src/MathTrainerDotNet
 RUN dotnet publish -c Release -o /app/publish
 
 # Runtime Stage - with nginx
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:11.0 AS runtime
 
 # install nginx and supervisor.
 # gosu is deliberately absent: nothing in this image switches user at runtime
